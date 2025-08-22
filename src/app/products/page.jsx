@@ -1,4 +1,3 @@
-"use client";
 import React from "react";
 import Link from "next/link";
 
@@ -17,10 +16,10 @@ export default function ProductsPage() {
           <Link
             key={p.id}
             href={`/products/${p.id}`}
-            className="p-6 border rounded-xl shadow hover:shadow-lg bg-white dark:bg-gray-900"
+            className="block p-6 border rounded-xl shadow hover:shadow-lg transition bg-white dark:bg-gray-900"
           >
             <h3 className="text-xl font-semibold">{p.name}</h3>
-            <p className="mt-2 text-gray-600">${p.price}</p>
+            <p className="mt-2 text-gray-600 dark:text-gray-300">${p.price}</p>
           </Link>
         ))}
       </div>
