@@ -16,7 +16,6 @@ export const authOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        // এখানে তুমি তোমার Database check করতে পারো
         if (
           credentials?.email === "test@test.com" &&
           credentials?.password === "123456"
@@ -32,7 +31,7 @@ export const authOptions = {
   },
   callbacks: {
     async redirect({ url, baseUrl }) {
-      return "/products"; // successful login হলে এখানে redirect হবে
+      return "/products";
     },
   },
 };

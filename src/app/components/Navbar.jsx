@@ -3,16 +3,18 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Sun, Moon, Menu, X } from "lucide-react";
+import { useSession, signOut } from "next-auth/react"; // 👈 NextAuth hook
 
 export default function Navbar() {
   const pathname = usePathname();
   const [dark, setDark] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
+  const { data: session } = useSession(); // 👈 check if user logged in
 
+  // Public links
   const navLinks = [
     { name: "Home", href: "/" },
     { name: "Products", href: "/products" },
-    { name: "Dashboard", href: "/dashboard/add-product" },
   ];
 
   return (
@@ -42,16 +44,38 @@ export default function Navbar() {
               {link.name}
             </Link>
           ))}
+
+          {/* 👇 Private Link (only show if logged in) */}
+          {session && (
+            <Link
+              href="/dashboard/add-product"
+              className={`hover:text-blue-600 transition ${
+                pathname.startsWith("/dashboard")
+                  ? "text-blue-600 dark:text-blue-400"
+                  : ""
+              }`}
+            >
+              Dashboard
+            </Link>
+          )}
         </nav>
 
-        {/* Right Side (Login + Theme Toggle + Mobile Menu Button) */}
+        {/* Right Side (Login/Logout + Theme Toggle + Mobile Menu Button) */}
         <div className="flex items-center gap-3">
-          {/* Login Button */}
-          <Link href="/login">
-            <button className="rounded-full bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition dark:bg-blue-500 dark:hover:bg-blue-600">
-              Login
+          {!session ? (
+            <Link href="/login">
+              <button className="rounded-full bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition dark:bg-blue-500 dark:hover:bg-blue-600">
+                Login
+              </button>
+            </Link>
+          ) : (
+            <button
+              onClick={() => signOut()}
+              className="rounded-full bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 transition"
+            >
+              Logout
             </button>
-          </Link>
+          )}
 
           {/* Theme Toggle */}
           <button
@@ -93,13 +117,37 @@ export default function Navbar() {
                 {link.name}
               </Link>
             ))}
-            <Link
-              href="/login"
-              onClick={() => setMobileMenu(false)}
-              className="rounded px-3 py-2 text-blue-600 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-            >
-              Login
-            </Link>
+
+            {/* 👇 Private Link mobile */}
+            {session && (
+              <Link
+                href="/dashboard/add-product"
+                onClick={() => setMobileMenu(false)}
+                className="rounded px-3 py-2 text-blue-600 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+              >
+                Dashboard
+              </Link>
+            )}
+
+            {!session ? (
+              <Link
+                href="/login"
+                onClick={() => setMobileMenu(false)}
+                className="rounded px-3 py-2 text-blue-600 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+              >
+                Login
+              </Link>
+            ) : (
+              <button
+                onClick={() => {
+                  setMobileMenu(false);
+                  signOut();
+                }}
+                className="rounded px-3 py-2 text-red-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+              >
+                Logout
+              </button>
+            )}
           </nav>
         </div>
       )}

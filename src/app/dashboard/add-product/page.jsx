@@ -19,18 +19,24 @@ export default function AddProductPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/products", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      // Load existing products from localStorage
+      const existing = JSON.parse(localStorage.getItem("products")) || [];
 
-      if (!res.ok) throw new Error("Failed to add product");
+      // Create new product with a unique ID
+      const newProduct = {
+        id: Date.now(),
+        ...formData,
+      };
+
+      // Save updated products array
+      const updatedProducts = [...existing, newProduct];
+      localStorage.setItem("products", JSON.stringify(updatedProducts));
 
       alert("✅ Product added successfully!");
       setFormData({ name: "", description: "", price: "" });
     } catch (err) {
       alert("❌ Error adding product");
+      console.error(err);
     } finally {
       setLoading(false);
     }
